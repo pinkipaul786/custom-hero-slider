@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 <!DOCTYPE html>
 <html lang="en">
@@ -591,3 +592,598 @@
   </script>
 </body>
 </html>
+=======
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luxury Jewellery Slider</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #100d16;
+      color: #fff;
+      min-height: 100vh;
+      padding: 50px 0;
+      overflow-x: hidden;
+    }
+
+    .jewellery-section {
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Colour panel */
+    .panel {
+      position: absolute;
+      inset: 0;
+      background: #251a32;
+      transition: background 0.5s ease;
+      z-index: 0;
+    }
+
+    .panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        120deg,
+        rgba(0, 0, 0, 0.25),
+        transparent 60%
+      );
+    }
+
+    .section-content {
+      position: relative;
+      z-index: 1;
+      padding: 40px 0;
+    }
+
+    .heading {
+      text-align: center;
+      padding: 0 20px;
+      margin-bottom: 40px;
+    }
+
+    .heading p {
+      font-size: 12px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      color: #e8d2ad;
+    }
+
+    .heading h1 {
+      font-family: Georgia, serif;
+      font-weight: normal;
+      font-size: clamp(32px, 5vw, 60px);
+    }
+
+    /* Slider viewport */
+    .viewport {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      padding: 20px 0 35px;
+      touch-action: pan-y;
+    }
+
+    /* Track */
+    .track {
+      display: flex;
+      align-items: stretch;
+      gap: 22px;
+      padding: 0 5%;
+      transition: transform 0.55s cubic-bezier(.22, .61, .36, 1);
+      will-change: transform;
+    }
+
+    /* Cards: one full card + part of the next */
+    .card {
+      position: relative;
+      flex: 0 0 70%;
+      min-width: 0;
+      height: 420px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: var(--card-bg);
+      transition:
+        opacity 0.4s ease,
+        border-color 0.4s ease;
+    }
+
+    .card-art {
+      position: absolute;
+      inset: 0;
+      background: var(--card-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-art::before {
+      content: "";
+      position: absolute;
+      width: 70%;
+      height: 70%;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.12),
+        transparent 70%
+      );
+    }
+
+    /* Decorative jewellery illustration */
+    .gem {
+      position: relative;
+      z-index: 1;
+      width: 150px;
+      height: 150px;
+      transform: rotate(45deg);
+      border: 2px solid rgba(255, 255, 255, 0.7);
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.7),
+        rgba(255, 255, 255, 0.05) 45%,
+        rgba(0, 0, 0, 0.35)
+      );
+      box-shadow:
+        0 0 25px rgba(255, 255, 255, 0.18),
+        inset 0 0 25px rgba(255, 255, 255, 0.18);
+    }
+
+    .gem::before,
+    .gem::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+    }
+
+    .gem::after {
+      inset: 35px;
+    }
+
+    .gem.circle {
+      border-radius: 50%;
+      transform: none;
+      width: 145px;
+      height: 145px;
+    }
+
+    .gem.oval {
+      width: 105px;
+      height: 175px;
+      border-radius: 50%;
+      transform: rotate(25deg);
+    }
+
+    .card-copy {
+      position: absolute;
+      left: 30px;
+      right: 30px;
+      bottom: 28px;
+      z-index: 2;
+    }
+
+    .card-copy span {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #e8d2ad;
+      margin-bottom: 9px;
+    }
+
+    .card-copy h2 {
+      font-family: Georgia, serif;
+      font-size: clamp(24px, 3vw, 38px);
+      font-weight: normal;
+      margin-bottom: 8px;
+    }
+
+    .card-copy p {
+      font-size: 13px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.8);
+      max-width: 340px;
+    }
+
+    /* Colour wipe */
+    .card .wipe {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      background: var(--wipe-color);
+      transform: scaleX(0);
+      transform-origin: left;
+      pointer-events: none;
+    }
+
+    .card.wiping .wipe {
+      animation: wipeEffect 0.65s ease forwards;
+    }
+
+    @keyframes wipeEffect {
+      0% {
+        transform: scaleX(0);
+        transform-origin: left;
+      }
+
+      45% {
+        transform: scaleX(1);
+        transform-origin: left;
+      }
+
+      55% {
+        transform: scaleX(1);
+        transform-origin: right;
+      }
+
+      100% {
+        transform: scaleX(0);
+        transform-origin: right;
+      }
+    }
+
+    /* Navigation */
+    .slider-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding: 0 20px;
+    }
+
+    .nav-btn {
+      width: 48px;
+      height: 48px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      background: transparent;
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: #fff;
+      color: #17111c;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .slide-counter {
+      font-size: 13px;
+      letter-spacing: 2px;
+      min-width: 65px;
+      text-align: center;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px 0;
+      }
+
+      .section-content {
+        padding: 30px 0;
+      }
+
+      .heading {
+        margin-bottom: 20px;
+      }
+
+      .track {
+        gap: 14px;
+        padding: 0 5%;
+      }
+
+      .card {
+        flex-basis: 85%;
+        height: 360px;
+      }
+
+      .gem {
+        width: 110px;
+        height: 110px;
+      }
+
+      .gem.circle {
+        width: 110px;
+        height: 110px;
+      }
+
+      .gem.oval {
+        width: 80px;
+        height: 135px;
+      }
+
+      .card-copy {
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+      }
+
+      .card-copy h2 {
+        font-size: 27px;
+      }
+
+      .nav-btn {
+        width: 42px;
+        height: 42px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .track,
+      .panel {
+        transition: none;
+      }
+
+      .card.wiping .wipe {
+        animation-duration: 0.01ms;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="jewellery-section">
+    <div class="panel" id="panel"></div>
+
+    <div class="section-content">
+      <header class="heading">
+        <p>Discover the collection</p>
+        <h1>Jewels of Elegance</h1>
+      </header>
+
+      <div class="viewport" id="viewport">
+        <div class="track" id="track"></div>
+      </div>
+
+      <div class="slider-controls">
+        <button
+          class="nav-btn"
+          id="prevBtn"
+          type="button"
+          aria-label="Previous item"
+        >&#8592;</button>
+
+        <span class="slide-counter" id="counter">01 / 05</span>
+
+        <button
+          class="nav-btn"
+          id="nextBtn"
+          type="button"
+          aria-label="Next item"
+        >&#8594;</button>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const slides = [
+      {
+        eyebrow: "The signature collection",
+        title: "Golden Radiance",
+        description: "Timeless gold-inspired elegance for every occasion.",
+        bg: "linear-gradient(145deg, #20152b, #79552e)",
+        wipe: "#b58a51",
+        gem: "diamond"
+      },
+      {
+        eyebrow: "Crafted to shine",
+        title: "Midnight Diamond",
+        description: "A striking design inspired by the beauty of the night.",
+        bg: "linear-gradient(145deg, #101827, #40526d)",
+        wipe: "#7289a8",
+        gem: "diamond"
+      },
+      {
+        eyebrow: "A touch of luxury",
+        title: "Ruby Romance",
+        description: "Rich ruby tones with a bold, sophisticated finish.",
+        bg: "linear-gradient(145deg, #35101d, #963f50)",
+        wipe: "#a94358",
+        gem: "oval"
+      },
+      {
+        eyebrow: "Everyday elegance",
+        title: "Pearl Essence",
+        description: "Soft, luminous inspiration with a graceful silhouette.",
+        bg: "linear-gradient(145deg, #28252b, #8a817a)",
+        wipe: "#b9ada1",
+        gem: "circle"
+      },
+      {
+        eyebrow: "The exclusive edit",
+        title: "Emerald Grace",
+        description: "Deep green tones made for unforgettable moments.",
+        bg: "linear-gradient(145deg, #102e27, #367c5b)",
+        wipe: "#478c6b",
+        gem: "diamond"
+      }
+    ];
+
+    const track = document.getElementById("track");
+    const viewport = document.getElementById("viewport");
+    const panel = document.getElementById("panel");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const counter = document.getElementById("counter");
+
+    let currentIndex = 0;
+    let startX = 0;
+    let endX = 0;
+    let resizeFrame;
+
+    // Create all slider cards.
+    slides.forEach((slide, index) => {
+      const card = document.createElement("article");
+      card.className = "card";
+      card.style.setProperty("--card-bg", slide.bg);
+      card.style.setProperty("--wipe-color", slide.wipe);
+
+      card.innerHTML = `
+        <div class="card-art">
+          <div class="gem ${slide.gem}"></div>
+        </div>
+
+        <div class="card-copy">
+          <span>${slide.eyebrow}</span>
+          <h2>${slide.title}</h2>
+          <p>${slide.description}</p>
+        </div>
+
+        <div class="wipe"></div>
+      `;
+
+      track.appendChild(card);
+    });
+
+    function getCards() {
+      return [...track.querySelectorAll(".card")];
+    }
+
+    // Keep the track within its valid scrolling boundaries.
+    function updateSlider(animate = true) {
+      const cards = getCards();
+
+      if (!cards.length) return;
+
+      const styles = getComputedStyle(track);
+      const gap = parseFloat(styles.columnGap || styles.gap) || 0;
+      const trackPaddingLeft = parseFloat(styles.paddingLeft) || 0;
+
+      const viewportWidth = viewport.clientWidth;
+      const firstCardWidth = cards[0].getBoundingClientRect().width;
+
+      const totalWidth =
+        cards.reduce(
+          (sum, card) => sum + card.getBoundingClientRect().width,
+          0
+        ) +
+        gap * (cards.length - 1) +
+        trackPaddingLeft +
+        (parseFloat(styles.paddingRight) || 0);
+
+      const maxTranslate = Math.max(0, totalWidth - viewportWidth);
+
+      const requestedTranslate =
+        currentIndex * (firstCardWidth + gap);
+
+      const translate = Math.min(requestedTranslate, maxTranslate);
+
+      track.style.transition = animate
+        ? "transform 0.55s cubic-bezier(.22, .61, .36, 1)"
+        : "none";
+
+      track.style.transform = `translateX(-${translate}px)`;
+
+      panel.style.background = slides[currentIndex].bg;
+
+      counter.textContent =
+        `${String(currentIndex + 1).padStart(2, "0")} / ` +
+        `${String(slides.length).padStart(2, "0")}`;
+
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === slides.length - 1;
+    }
+
+    function goToSlide(index) {
+      const cards = getCards();
+
+      if (!cards.length) return;
+
+      const nextIndex = Math.max(
+        0,
+        Math.min(index, slides.length - 1)
+      );
+
+      if (nextIndex === currentIndex) return;
+
+      const oldIndex = currentIndex;
+      currentIndex = nextIndex;
+
+      // Trigger the wipe on the incoming card.
+      const incomingCard = cards[currentIndex];
+      incomingCard.classList.remove("wiping");
+
+      // Restart the CSS animation.
+      void incomingCard.offsetWidth;
+      incomingCard.classList.add("wiping");
+
+      updateSlider(true);
+
+      window.setTimeout(() => {
+        incomingCard.classList.remove("wiping");
+      }, 700);
+    }
+
+    prevBtn.addEventListener("click", () => {
+      goToSlide(currentIndex - 1);
+    });
+
+    nextBtn.addEventListener("click", () => {
+      goToSlide(currentIndex + 1);
+    });
+
+    // Keyboard navigation.
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight") {
+        goToSlide(currentIndex + 1);
+      }
+
+      if (event.key === "ArrowLeft") {
+        goToSlide(currentIndex - 1);
+      }
+    });
+
+    // Touch and mouse swipe.
+    viewport.addEventListener("pointerdown", (event) => {
+      startX = event.clientX;
+      endX = startX;
+    });
+
+    viewport.addEventListener("pointerup", (event) => {
+      endX = event.clientX;
+      const difference = startX - endX;
+
+      if (Math.abs(difference) > 50) {
+        goToSlide(
+          difference > 0 ? currentIndex + 1 : currentIndex - 1
+        );
+      }
+    });
+
+    // Recalculate card positioning when the window changes size.
+    window.addEventListener("resize", () => {
+      cancelAnimationFrame(resizeFrame);
+
+      resizeFrame = requestAnimationFrame(() => {
+        updateSlider(false);
+      });
+    });
+
+    // Initial render.
+    updateSlider(false);
+  </script>
+</body>
+</html>
+>>>>>>> 76f550025b157cb2ad1ef6ea0cd289dcafc0feff
