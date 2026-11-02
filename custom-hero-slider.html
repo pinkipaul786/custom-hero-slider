@@ -1,0 +1,748 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Luxury Jewellery Slider</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --ease: cubic-bezier(.65, 0, .25, 1);
+      --dur: .9s;
+      --color-obsidian-black: #090808;
+      --color-forest-green: #0F2F24;
+      --color-deep-burgundy: #550319;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      background: var(--color-obsidian-black);
+      font-family: "Montserrat", sans-serif;
+      color: white;
+    }
+
+    body {
+      overflow: hidden;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      min-height: 550px;
+      overflow: hidden;
+      background: #211b17;
+    }
+
+    /* Right background panel */
+    .panel {
+      position: absolute;
+      inset: 0 0 0 58%;
+      background: var(--color-deep-burgundy);
+      transition: background var(--dur) var(--ease);
+    }
+
+    /* Left background layers */
+    .bgs {
+      position: absolute;
+      inset: 0 42% 0 0;
+    }
+
+    .bg {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      background-position: center;
+      background-size: cover;
+      transition: opacity var(--dur) var(--ease);
+    }
+
+    .bg.on {
+      opacity: 1;
+    }
+
+    .bgs::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 10, 10, .62);
+    }
+
+    /* Decorative lines */
+    .line {
+      position: absolute;
+      left: 12%;
+      top: 0;
+      height: 30%;
+      width: 1px;
+      background: rgba(255, 255, 255, .4);
+      z-index: 2;
+    }
+
+    .line.b {
+      top: auto;
+      bottom: 0;
+    }
+
+    /* Hero text */
+    .copy {
+      position: absolute;
+      left: 8%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: min(34%, 420px);
+      z-index: 3;
+    }
+
+    .copy > * {
+      opacity: 0;
+      transform: translateY(24px);
+      transition:
+        opacity .6s var(--ease),
+        transform .6s var(--ease);
+    }
+
+    .copy.in > * {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .copy.in > :nth-child(2) {
+      transition-delay: .08s;
+    }
+
+    .copy.in > :nth-child(3) {
+      transition-delay: .16s;
+    }
+
+    .copy.in > :nth-child(4) {
+      transition-delay: .24s;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-size: clamp(24px, 2.6vw, 38px);
+      line-height: 1.25;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .02em;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: clamp(18px, 1.9vw, 26px);
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+    p {
+      margin: 0 0 24px;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #f0e9e4;
+    }
+
+    .cta {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: var(--color-forest-green);
+      color: white;
+      border: 0;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background .3s ease;
+    }
+
+    .cta:hover {
+      background: #245a43;
+    }
+
+    /* Carousel viewport */
+    .viewport {
+      position: absolute;
+      left: 56%;
+      right: 0;
+      top: 50%;
+      height: min(52vh, 340px);
+      transform: translateY(-50%);
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    /* Horizontal track */
+    .track {
+      display: flex;
+      gap: 3%;
+      width: 100%;
+      height: 100%;
+      transition: transform var(--dur) var(--ease);
+      will-change: transform;
+    }
+
+    /* Jewellery cards */
+    .card {
+      position: relative;
+      flex: 0 0 min(30vw, 340px);
+      height: 100%;
+      overflow: hidden;
+      border-radius: 12px;
+      background: var(--g);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, .35);
+      isolation: isolate;
+    }
+
+    .card-art {
+      position: absolute;
+      inset: 0;
+      background: var(--g);
+      transition: transform .7s ease;
+    }
+
+    .card:hover .card-art {
+      transform: scale(1.04);
+    }
+
+    .card-art::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(
+          ellipse at 50% 35%,
+          rgba(255, 255, 255, .22),
+          transparent 45%
+        ),
+        linear-gradient(
+          145deg,
+          transparent 35%,
+          rgba(0, 0, 0, .32)
+        );
+    }
+
+    /* Decorative jewellery illustration */
+    .gem {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 112px;
+      height: 112px;
+      transform: translate(-50%, -50%) rotate(45deg);
+      border: 2px solid rgba(255, 239, 200, .9);
+      border-radius: 50% 50% 8% 50%;
+      box-shadow:
+        0 0 35px rgba(255, 221, 160, .3),
+        inset 0 0 22px rgba(255, 255, 255, .2);
+    }
+
+    .gem::before,
+    .gem::after {
+      content: "";
+      position: absolute;
+      inset: 15px;
+      border: 1px solid rgba(255, 239, 200, .7);
+      border-radius: inherit;
+    }
+
+    .gem::after {
+      inset: 30px;
+    }
+
+    .gem.gem-necklace {
+      width: 135px;
+      height: 135px;
+      border-radius: 50%;
+      transform: translate(-50%, -40%) rotate(45deg) scaleX(.72);
+    }
+
+    .gem.gem-earring {
+      width: 85px;
+      height: 85px;
+    }
+
+    .card-label {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      right: 20px;
+      color: white;
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      text-shadow: 0 2px 8px #000;
+      z-index: 1;
+    }
+
+    /* Full-card colour wipe overlay */
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: var(--wipe, #855624);
+      transform: translateX(-101%);
+      opacity: 1;
+      pointer-events: none;
+    }
+
+    /* Previous: right to left */
+    .card.wipe-prev::after {
+      animation: wipeRightToLeft var(--dur) var(--ease) forwards;
+    }
+
+    /* Next: left to right */
+    .card.wipe-next::after {
+      animation: wipeLeftToRight var(--dur) var(--ease) forwards;
+    }
+
+    @keyframes wipeRightToLeft {
+      0% {
+        transform: translateX(101%);
+      }
+
+      50% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-101%);
+      }
+    }
+
+    @keyframes wipeLeftToRight {
+      0% {
+        transform: translateX(-101%);
+      }
+
+      50% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(101%);
+      }
+    }
+
+    /* Navigation */
+    .nav {
+      position: absolute;
+      left: calc(44% + 12px);
+      bottom: 7%;
+      display: flex;
+      gap: 12px;
+      z-index: 4;
+    }
+
+    .nav button {
+      width: 42px;
+      height: 42px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .35);
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      transition: background .3s, transform .2s;
+    }
+
+    .nav button:hover {
+      background: white;
+      color: #111;
+    }
+
+    .nav button:active {
+      transform: scale(.92);
+    }
+
+    /* Tablet */
+    @media (min-width: 701px) and (max-width: 1050px) {
+      .copy {
+        left: 6%;
+        width: 34%;
+      }
+
+      .viewport {
+        left: 43%;
+      }
+
+      .card {
+        flex-basis: 34vw;
+      }
+
+      .nav {
+        left: calc(43% + 12px);
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 700px) {
+      .hero {
+        min-height: 650px;
+      }
+
+      .panel {
+        inset: 48% 0 0 0;
+      }
+
+      .bgs {
+        inset: 0;
+      }
+
+      .copy {
+        left: 8%;
+        top: 7%;
+        transform: none;
+        width: 84%;
+      }
+
+      h1 {
+        font-size: clamp(23px, 6vw, 34px);
+        margin-bottom: 12px;
+      }
+
+      h2 {
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+
+      p {
+        font-size: 12px;
+        line-height: 1.6;
+        margin-bottom: 15px;
+      }
+
+      .cta {
+        padding: 13px;
+      }
+
+      .viewport {
+        left: 8%;
+        right: 8%;
+        top: auto;
+        bottom: 13%;
+        height: 30%;
+        transform: none;
+      }
+
+      .track {
+        gap: 4%;
+      }
+
+      .card {
+        flex-basis: 75%;
+      }
+
+      .nav {
+        left: 8%;
+        bottom: 3%;
+      }
+
+      .nav button {
+        width: 36px;
+        height: 36px;
+      }
+
+      .line {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="hero" id="hero">
+
+    <div class="bgs" id="bgs"></div>
+    <div class="panel" id="panel"></div>
+
+    
+<div class="line"></div>
+    <div class="line b"></div>
+    <div class="copy" id="copy">/
+      
+      <h1 id="t"></h1>
+      <h2 id="s"></h2>
+      <p id="d"></p>
+      <button class="cta" id="b" type="button"></button>
+    </div>
+
+    <div class="viewport">
+      <div class="track" id="track"></div>
+    </div>
+
+    <div class="nav">
+      <button id="prev" type="button" aria-label="Previous slide">
+        &larr;
+      </button>
+
+      <button id="next" type="button" aria-label="Next slide">
+        &rarr;
+      </button>
+    </div>
+
+  </section>
+
+  <script>
+    const slides = [
+      {
+        color: "#855624",
+        title: "The Gemstone Edit",
+        sub: "Where Every Stone Tells a Story",
+        desc: "Discover extraordinary gemstones transformed into jewellery designed to be treasured for generations.",
+        cta: "Discover Gemstones",
+        bg: "linear-gradient(135deg, #3a2a1a, #6b4a2a)",
+        card: "linear-gradient(160deg, #1a1230, #6b5a3a)",
+        label: "The Gemstone Edit",
+        gem: "gem-necklace"
+      },
+      {
+        color: "#550319",
+        title: "Timeless. Distinctive. Yours.",
+        sub: "Designed to Be Remembered",
+        desc: "Contemporary jewellery crafted with exceptional gemstones and an enduring sense of elegance.",
+        cta: "Shop New Arrivals",
+        bg: "linear-gradient(135deg, #2a1020, #5a1a30)",
+        card: "linear-gradient(160deg, #a8957a, #c9a85a)",
+        label: "Signature Gold",
+        gem: "gem-earring"
+      },
+      {
+        color: "#9EA3B7",
+        title: "Crafted in Jaipur",
+        sub: "Heritage, Reimagined",
+        desc: "The artistry of Jaipur meets contemporary design in jewellery created for today's celebrations.",
+        cta: "Discover the Collection",
+        bg: "linear-gradient(135deg, #35313b, #77758b)",
+        card: "linear-gradient(160deg, #d8b070, #b88a4a)",
+        label: "Jaipur Heritage",
+        gem: "gem-necklace"
+      }
+    ];
+
+    const $ = id => document.getElementById(id);
+
+    const track = $("track");
+    const bgs = $("bgs");
+    const copy = $("copy");
+    const panel = $("panel");
+    const hero = $("hero");
+
+    let i = 0;
+    let busy = false;
+    let timer;
+    let unlockTimer;
+    let textTimer;
+
+    /* Create cards and background layers */
+    slides.forEach(slide => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.setProperty("--g", slide.card);
+
+      const art = document.createElement("div");
+      art.className = "card-art";
+      art.style.setProperty("--g", slide.card);
+
+      const gem = document.createElement("div");
+      gem.className = "gem " + slide.gem;
+
+      const label = document.createElement("div");
+      label.className = "card-label";
+      label.textContent = slide.label;
+
+      art.appendChild(gem);
+      card.appendChild(art);
+      card.appendChild(label);
+      track.appendChild(card);
+
+      const bg = document.createElement("div");
+      bg.className = "bg";
+      bg.style.background = slide.bg;
+      bgs.appendChild(bg);
+    });
+
+    const cards = [...track.children];
+    const layers = [...bgs.children];
+
+    function setText(slide) {
+      $("t").textContent = slide.title;
+      $("s").textContent = slide.sub;
+      $("d").textContent = slide.desc;
+      $("b").textContent = slide.cta;
+    }
+
+    /* Position the active card at the left of the viewport */
+    function place() {
+      const x = -cards[i].offsetLeft;
+      track.style.transform = `translateX(${x}px)`;
+    }
+
+    function go(n, first = false, direction = "next") {
+      if (busy && !first) return;
+
+      busy = true;
+
+      clearTimeout(unlockTimer);
+      clearTimeout(textTimer);
+
+      i = (n + slides.length) % slides.length;
+
+      const slide = slides[i];
+
+      panel.style.background = slide.color;
+
+      layers.forEach((layer, index) => {
+        layer.classList.toggle("on", index === i);
+      });
+
+      copy.classList.remove("in");
+
+      /* Clear old wipe animations */
+      cards.forEach(card => {
+        card.classList.remove("wipe-next", "wipe-prev");
+      });
+
+      /* Apply directional wipe to the active card */
+      if (!first) {
+        const activeCard = cards[i];
+
+        activeCard.style.setProperty("--wipe", slide.color);
+
+        /* Force browser to restart the animation */
+        void activeCard.offsetWidth;
+
+        activeCard.classList.add(
+          direction === "prev" ? "wipe-prev" : "wipe-next"
+        );
+      }
+
+      place();
+
+      textTimer = setTimeout(() => {
+        setText(slide);
+        copy.classList.add("in");
+      }, first ? 50 : 350);
+
+      unlockTimer = setTimeout(() => {
+        busy = false;
+      }, 900);
+    }
+
+    function stopAutoplay() {
+      clearInterval(timer);
+    }
+
+    function startAutoplay() {
+      stopAutoplay();
+
+      timer = setInterval(() => {
+        if (!busy) {
+          go(i + 1, false, "next");
+        }
+      }, 5000);
+    }
+
+    /* Previous button: right-to-left wipe */
+    $("prev").addEventListener("click", () => {
+      go(i - 1, false, "prev");
+      // startAutoplay();
+    });
+
+    /* Next button: left-to-right wipe */
+    $("next").addEventListener("click", () => {
+      go(i + 1, false, "next");
+      // startAutoplay();
+    });
+
+    /* Keyboard navigation */
+    document.addEventListener("keydown", event => {
+      if (event.key === "ArrowRight") {
+        go(i + 1, false, "next");
+        // startAutoplay();
+      }
+
+      if (event.key === "ArrowLeft") {
+        go(i - 1, false, "prev");
+        // startAutoplay();
+      }
+    });
+
+    /* Touch and pointer swipe */
+    let startX = null;
+
+    hero.addEventListener("pointerdown", event => {
+      startX = event.clientX;
+      // stopAutoplay();
+    });
+
+    hero.addEventListener("pointerup", event => {
+      if (startX === null) return;
+
+      const difference = event.clientX - startX;
+
+      if (Math.abs(difference) > 50) {
+        if (difference < 0) {
+          go(i + 1, false, "next");
+        } else {
+          go(i - 1, false, "prev");
+        }
+
+        // startAutoplay();
+      } else {
+        // startAutoplay();
+      }
+
+      startX = null;
+    });
+
+    hero.addEventListener("pointercancel", () => {
+      startX = null;
+      // startAutoplay();
+    });
+
+    /* Recalculate positions on resize */
+    window.addEventListener("resize", place);
+
+    /* Pause autoplay on keyboard interaction */
+    hero.addEventListener("keydown", stopAutoplay);
+
+    /* Initialize */
+    go(0, true);
+    // startAutoplay();
+  </script>
+</body>
+</html>
