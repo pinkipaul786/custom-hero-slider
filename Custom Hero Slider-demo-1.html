@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Custom Hero Slider</title>
+<style>
+:root{--ease:cubic-bezier(.65,0,.25,1);--dur:.9s;box-sizing:border-box}
+*{box-sizing:inherit}
+html,body{height:100%;margin:0;background:#000;font-family:Montserrat,system-ui,sans-serif;color:#fff;overflow:hidden}
+.hero{position:relative;height:100%;min-height:420px;overflow:hidden}
+/* right colour panel */
+.panel{position:absolute;inset:0 0 0 58%;background:var(--c);transition:background var(--dur) var(--ease)}
+/* left photo layers (crossfade) */
+.bgs{position:absolute;inset:0 42% 0 0}
+.bg{position:absolute;inset:0;opacity:0;transition:opacity var(--dur) var(--ease)}
+.bg.on{opacity:1}
+.bgs::after{content:"";position:absolute;inset:0;background:rgba(10,10,10,.62)}
+.line{position:absolute;left:12%;top:0;height:30%;width:1px;background:rgba(255,255,255,.4)}
+.line.b{top:auto;bottom:0}
+/* text */
+.copy{position:absolute;left:12%;top:50%;transform:translateY(-50%);width:min(34%,420px);z-index:3}
+.copy>*{opacity:0;transform:translateY(24px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.copy.in>*{opacity:1;transform:none}
+.copy.in>*:nth-child(2){transition-delay:.08s}.copy.in>*:nth-child(3){transition-delay:.16s}.copy.in>*:nth-child(4){transition-delay:.24s}
+h1{font-size:clamp(22px,2.6vw,36px);margin:0 0 14px;text-transform:uppercase;letter-spacing:.02em}
+h2{font-size:clamp(18px,1.9vw,26px);margin:0 0 14px;font-weight:600}
+p{font-size:14px;line-height:1.6;margin:0 0 22px;opacity:.9}
+.cta{display:block;width:100%;padding:14px;background:#14392a;color:#fff;text-align:center;border:0;border-radius:3px;font:700 12px Montserrat,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+/* cards */
+.viewport{position:absolute;left:44%;right:0;top:50%;height:min(52vh,340px);transform:translateY(-50%);z-index:2}
+.track{display:flex;gap:6%;height:100%;transition:transform var(--dur) var(--ease);will-change:transform}
+.card{flex:0 0 min(30vw,340px);height:100%;border-radius:12px;background:var(--g);box-shadow:0 14px 40px rgba(0,0,0,.35);position:relative;overflow:hidden}
+.card::after{content:"";position:absolute;inset:0;background:var(--wipe,#7fc4b9);transform:translateX(101%);opacity:.55}
+.card.wipe::after{animation:wipe var(--dur) var(--ease)}
+@keyframes wipe{0%{transform:translateX(-101%)}50%{transform:translateX(0)}100%{transform:translateX(101%)}}
+/* arrows */
+.nav{position:absolute;left:calc(44% + 12%);bottom:7%;display:flex;gap:12px;z-index:4}
+.nav button{width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.35);color:#fff;font-size:15px;cursor:pointer;transition:background .3s,transform .2s}
+.nav button:hover{background:rgba(255,255,255,.7);color:#111}.nav button:active{transform:scale(.92)}
+@media(max-width:700px){
+ .panel{inset:50% 0 0 0}.bgs{inset:0}.copy{left:8%;top:30%;width:84%}
+ .viewport{left:8%;top:auto;bottom:12%;transform:none;height:30%}.card{flex-basis:60vw}
+ .nav{left:8%;bottom:3%}.line{display:none}
+}
+</style>
+</head>
+<body>
+<section class="hero" id="hero">
+  <div class="bgs" id="bgs"></div>
+  <div class="panel" id="panel"></div>
+  <div class="line"></div><div class="line b"></div>
+  <div class="copy" id="copy">
+    <h1 id="t"></h1><h2 id="s"></h2><p id="d"></p><button class="cta" id="b"></button>
+  </div>
+  <div class="viewport"><div class="track" id="track"></div></div>
+  <div class="nav"><button id="prev" aria-label="Previous">&larr;</button><button id="next" aria-label="Next">&rarr;</button></div>
+</section>
+<script>
+// ====== EDIT ME: swap bg / card for your own image URLs, e.g. "url(img/1.jpg) center/cover" ======
+const slides=[
+ {color:"#8a5a2b",title:"The Gemstone Edit",sub:"Where Every Stone Tells a Story",desc:"Discover extraordinary gemstones transformed into jewellery designed to be treasured for generations.",cta:"Discover Gemstones",
+  bg:"linear-gradient(135deg,#3a2a1a,#6b4a2a)",card:"linear-gradient(160deg,#1a1230,#6b5a3a)"},
+ {color:"#5a0a28",title:"Timeless. Distinctive. Yours.",sub:"Designed to Be Remembered",desc:"Contemporary jewellery crafted with exceptional gemstones and an enduring sense of elegance.",cta:"Shop New Arrivals",
+  bg:"linear-gradient(135deg,#2a1020,#5a1a30)",card:"linear-gradient(160deg,#a8957a,#c9a85a)"},
+ {color:"#9a9db8",title:"Crafted in Jaipur",sub:"Heritage, Reimagined",desc:"The artistry of Jaipur meets contemporary design in jewellery created for today's celebrations.",cta:"Discover the Collection",
+  bg:"linear-gradient(135deg,#555,#888)",card:"linear-gradient(160deg,#d8b070,#b88a4a)"}
+];
+const $=id=>document.getElementById(id);
+const track=$("track"),bgs=$("bgs"),copy=$("copy");
+let i=0,busy=false;
+slides.forEach((s,n)=>{
+  const c=document.createElement("div");c.className="card";c.style.setProperty("--g",s.card);track.appendChild(c);
+  const b=document.createElement("div");b.className="bg";b.style.background=s.bg;bgs.appendChild(b);
+});
+const cards=[...track.children],layers=[...bgs.children];
+function setText(s){$("t").textContent=s.title;$("s").textContent=s.sub;$("d").textContent=s.desc;$("b").textContent=s.cta}
+function place(){ // centre active card inside the viewport, neighbours peek on either side
+  const vw=track.parentElement.clientWidth,cw=cards[i].offsetWidth;
+  const x=(vw-cw)/2-cards[i].offsetLeft;
+  track.style.transform=`translateX(${x}px)`;
+}
+function go(n,first){
+  if(busy&&!first)return;busy=true;
+  i=(n+slides.length)%slides.length;
+  const s=slides[i];
+  $("panel").style.setProperty("--c",s.color);$("panel").style.background=s.color;
+  layers.forEach((l,k)=>l.classList.toggle("on",k===i));
+  copy.classList.remove("in");
+  cards[i].style.setProperty("--wipe",s.color);
+  if(!first){cards.forEach(c=>c.classList.remove("wipe"));void cards[i].offsetWidth;cards[i].classList.add("wipe")}
+  place();
+  setTimeout(()=>{setText(s);copy.classList.add("in")},first?50:450);
+  setTimeout(()=>busy=false,900);
+}
+$("next").onclick=()=>go(i+1);$("prev").onclick=()=>go(i-1);
+addEventListener("keydown",e=>{if(e.key==="ArrowRight")go(i+1);if(e.key==="ArrowLeft")go(i-1)});
+let sx=null;addEventListener("pointerdown",e=>sx=e.clientX);
+addEventListener("pointerup",e=>{if(sx!==null&&Math.abs(e.clientX-sx)>50)go(i+(e.clientX<sx?1:-1));sx=null});
+addEventListener("resize",place);
+let timer=setInterval(()=>go(i+1),5000);
+["pointerdown","keydown"].forEach(ev=>addEventListener(ev,()=>clearInterval(timer),{once:true}));
+go(0,true);
+</script>
+</body>
+</html>
